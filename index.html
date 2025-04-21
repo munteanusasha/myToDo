@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List</title>
+    <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>📝ToDo List</h1>
+        <button id="themeToggle">🌙 Dark Mode</button>
+        <form id="taskForm">
+            <input type="text" id="taskInput" placeholder="Enter a task" required />
+            <input type="datetime-local"  id="taskDate" />
+            <button type="submit">Add</button>
+            <button id="clearAllBtn">Clear All</button>
+        </form>
+        <div id="filters">
+            <button data-filter="all">All</button>
+            <button data-filter="completed">Completed</button>
+            <button data-filter="pending">Pending</button>
+        </div>
+        <div id="countdownContainer" style="padding: 10px; font-weight: bold;"></div>
+        <ul id="taskList"></ul>
+        <script src="script.js"></script>
+    </body>
+    </html>
