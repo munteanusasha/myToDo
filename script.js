@@ -1,6 +1,8 @@
 const taskForm = document.getElementById("taskForm");
 const taskInput = document.getElementById("taskInput");
 const taskList = document.getElementById("taskList");
+const taskDate = document.getElementById("taskDate");
+// const taskDateInput = document.getElementById("taskDateInput");
 
 let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 let currentFilter = "all"; // Default filter
@@ -23,8 +25,8 @@ function renderTaskList(){
     const sortedTasks = filteredTasks.sort((a, b) => {
         if(!a.due && !b.due) return 0; // Both are null
         if(!a.due) return 1; // a is null, b is not
-        if(!b.null) return -1; // b is null, a is not
-        return a.due.localCompare(b.due); // Compare dates
+        if(!b.due) return -1; // b is null, a is not
+        return a.due.localeCompare(b.due); // Compare dates
     });
 
     // Render each sorted + filtered task
@@ -50,6 +52,8 @@ taskForm.addEventListener("submit", function(e) {
         renderTaskList(); // Re-render the task list
         // renderTask(task);
         taskInput.value = ""; // Clear input field
+        taskDate.value = ""; // Clear date field
+        console.log("Task created", task); // Log the task object for debugging
     }
 });
 
@@ -170,8 +174,8 @@ const countdownContainer = document.getElementById("countdownContainer");
 function updateCountdown(){
     const now = new Date();
     const upcomingTasks = tasks
-    .filter(task => task.due && !task.due)
-    .sort((a, b) => a.due.localCompare(b.due));
+    .filter(task => task.due && !task.done)
+    .sort((a, b) => a.due.localeCompare(b.due));
 
     if(upcomingTasks.length === 0){
         countdownContainer.innerText = "🎉 No upcoming tasks. You're all caught up!";
@@ -191,7 +195,15 @@ function updateCountdown(){
     const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
 
     countdownContainer.innerText = `⏳ Next: "${upcomingTasks[0].text}" due in ${hours}h ${minutes}m ${seconds}s`; 
+
+    console.log("⏳ Countdown running..."); // Log the countdown message for debugging
+    if(!Array.isArray(tasks)){
+        console.warn("Task is not an array or not yet loaded"); // Log a warning if tasks is not an array
+    }
+
 }
 
 setInterval(updateCountdown, 1000); // Update countdown every second
 updateCountdown(); // Initial call to set the countdown immediately
+
+console.log("Due date:", tasks.map(t => t.due)); // Log the due date of the tasks for debugging
