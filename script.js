@@ -68,9 +68,11 @@ function renderTask(task){
         const dateSpan = document.createElement("span");
         dateSpan.innerText = `(Due: ${task.due})`;
         dateSpan.style.marginLeft = "10px"; // Add some space between text and date
+        dateSpan.style.cursor = "pointer"; // Change cursor to pointer for date span
 
         const today = new Date().toISOString().split("T")[0]; // Get YYYY-MM-DD format
         if(task.due < today && !task.done){
+            li.classList.add("blink"); // Add blinking class for overdue tasks
             // Overdue task
             dateSpan.style.color = "red"; // Change color to red for overdue tasks
             dateSpan.style.fontWeight = "bold"; // Make it bold
@@ -128,8 +130,43 @@ function renderTask(task){
         }
     });
 
+    // Edit Due Date & Time button
+    const editDueBtn = document.createElement("button");
+    editDueBtn.innerText = "⏰";
+    editDueBtn.title = "Edit due date & time";
+    editDueBtn.addEventListener("click", function(){
+        const input = document.createElement("input");
+        input.type = "datetime-local"; // Use datetime-local for date and time input
+        input.value = task.due || ""; // Set the current due date or empty if null
+        input.style.marginLeft = "10px"; // Add some space between text and date
+
+        li.insertBefore(input, deleteBtn); // Insert input before delete button
+        input.focus(); // Focus on the input field
+        
+        input.addEventListener("blur", saveDueEdit);
+        input.addEventListener("keydown", function(e){
+            if(e.key === "Enter"){
+                input.blur(); // Trigger blur event to save
+            }
+        });
+
+        function saveDueEdit(){
+            const newDue = input.value;
+            if(newDue){
+                task.due = newDue; // Update task due date
+                saveTasks(); // Save updated tasks to local storage
+                renderTaskList(); // Re-render the task list
+            }else{
+                task.due = null; // Set due date to null if input is empty
+                saveTasks(); // Save updated tasks to local storage
+                renderTaskList(); // Re-render the task list
+            }
+        }
+    });
+
     li.appendChild(span);
     li.appendChild(editBtn);
+    li.appendChild(editDueBtn); // Append edit due button
     li.appendChild(deleteBtn);
     taskList.appendChild(li);
 }
@@ -189,6 +226,10 @@ function updateCountdown(){
     if(diffMs <= 0){
         countdownContainer.innerText = `⚠️ "${upcomingTasks[0].text}" is overdue!`;
         countdownContainer.classList.add("blink"); // Add blinking class for overdue tasks
+
+        const alertSound = document.getElementById("alertSound");
+        if(alertSound) alertSound.play(); // Play alert sound if overdue
+        
         return;
     }
 
@@ -206,7 +247,7 @@ function updateCountdown(){
 
     }
 
-    console.log("⏳ Countdown running..."); // Log the countdown message for debugging
+    // console.log("⏳ Countdown running..."); // Log the countdown message for debugging
     if(!Array.isArray(tasks)){
         console.warn("Task is not an array or not yet loaded"); // Log a warning if tasks is not an array
     }
@@ -216,4 +257,4 @@ function updateCountdown(){
 setInterval(updateCountdown, 1000); // Update countdown every second
 updateCountdown(); // Initial call to set the countdown immediately
 
-console.log("Due date:", tasks.map(t => t.due)); // Log the due date of the tasks for debugging
+// console.log("Due date:", tasks.map(t => t.due)); // Log the due date of the tasks for debugging
