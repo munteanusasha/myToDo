@@ -17,6 +17,18 @@ body.dark{
     }
 }
 
+.blink{
+    animation: blink-animation 1s steps(2, start) infinite;
+    color: red;
+    font-weight: bold;
+}
+
+@keyframes blink-animation{
+    to{
+        visibility: hidden;
+    }
+}
+
 form{
     margin-bottom: 20px;
 }

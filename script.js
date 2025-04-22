@@ -179,6 +179,7 @@ function updateCountdown(){
 
     if(upcomingTasks.length === 0){
         countdownContainer.innerText = "🎉 No upcoming tasks. You're all caught up!";
+        countdownContainer.classList.remove("blink"); // Remove blinking class if no tasks are due
         return;
     }
 
@@ -187,6 +188,7 @@ function updateCountdown(){
 
     if(diffMs <= 0){
         countdownContainer.innerText = `⚠️ "${upcomingTasks[0].text}" is overdue!`;
+        countdownContainer.classList.add("blink"); // Add blinking class for overdue tasks
         return;
     }
 
@@ -195,6 +197,14 @@ function updateCountdown(){
     const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
 
     countdownContainer.innerText = `⏳ Next: "${upcomingTasks[0].text}" due in ${hours}h ${minutes}m ${seconds}s`; 
+
+    // Blink if due within 10 minutes
+    if(diffMs < 10 * 60 * 1000){
+        countdownContainer.classList.add("blink"); // Add blinking class for tasks due within 10 minutes
+    }else{
+        countdownContainer.classList.remove("blink"); // Remove blinking class if not due soon
+
+    }
 
     console.log("⏳ Countdown running..."); // Log the countdown message for debugging
     if(!Array.isArray(tasks)){
